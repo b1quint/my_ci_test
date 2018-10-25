@@ -10,11 +10,8 @@ Welcome to Testing RTD's documentation!
    :maxdepth: 2
    :caption: Contents:
 
-My Main Title
-=============
-
-And let's try to make this work automatically! \o/
-
+   intro
+   api
 
 Indices and tables
 ==================

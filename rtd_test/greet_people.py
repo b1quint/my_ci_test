@@ -31,4 +31,7 @@ class GreetingRobot:
         self.name
 
     def greet(self):
-        print("Hi! My name is {:s}".format(self.name)
+        """
+        This is when our polite robot introduces itself.
+        """
+        print("Hi! My name is {:s}".format(self.name))

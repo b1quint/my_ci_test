@@ -11,10 +11,10 @@
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
-#
-# import os
-# import sys
-# sys.path.insert(0, os.path.abspath('.'))
+
+import os
+import sys
+
 
 
 # -- Project information -----------------------------------------------------
@@ -45,6 +45,7 @@ extensions = [
     'sphinx.ext.coverage',
     'sphinx.ext.ifconfig',
     'sphinx.ext.viewcode',
+    'sphinx.ext.napoleon',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -172,3 +173,42 @@ intersphinx_mapping = {'https://docs.python.org/': None}
 
 # If true, `todo` and `todoList` produce output, else they produce nothing.
 todo_include_todos = True
+
+# -- Enable autoapi ----------------------------------------------------------
+def run_apidoc(_):
+
+    # sphinx-apidoc --force --no-toc --separate --module --output-dir api/ ../../ ../../cal_service
+
+    current_path = os.path.abspath('.')
+    relative_path = "../"
+    build_path = os.path.join(current_path, relative_path)
+
+    ignore_paths = [
+        os.path.join(build_path, "cal_service"),
+    ]
+
+    argv = [
+               "--force",
+               "--no-toc",
+               "--separate",
+               "--module",
+               "--output-dir", "api/",
+               relative_path
+           ] + ignore_paths
+
+    sys.path.insert(0, build_path)
+
+    try:
+        # Sphinx 1.7+
+        from sphinx.ext import apidoc
+        apidoc.main(argv)
+
+    except ImportError:
+        # Sphinx 1.6 (and earlier)
+        from sphinx import apidoc
+        argv.insert(0, apidoc.__file__)
+        apidoc.main(argv)
+
+
+def setup(app):
+    app.connect('builder-inited', run_apidoc)
