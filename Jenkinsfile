@@ -3,6 +3,7 @@ pipeline {
     stages {
         stage('Build') {
             steps {
+                sh 'PATH=$PATH:/usr/local/bin/'
                 sh 'echo "Hello World"'
                 sh '''
                     echo "Multiline shell steps works too"
