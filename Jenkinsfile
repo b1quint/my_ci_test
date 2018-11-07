@@ -10,7 +10,7 @@ pipeline {
                     echo "Multiline shell steps works too"
                     ls -lah
                 '''
-               sh 'What about webhooks? Does it work?'
+               sh 'echo "What about webhooks? Does it work?"'
             }
         }
     }
