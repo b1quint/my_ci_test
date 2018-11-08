@@ -11,11 +11,6 @@ pipeline {
               python --version
             '''
           }
-          post {
-            always {
-              junit "**/TEST-*.xml"
-            }
-          }
         }
         stage('Python 3.6') {
           agent any 
@@ -23,11 +18,6 @@ pipeline {
             sh '''
               python --version
             '''
-          }
-          post {
-            always {
-              junit "**/TEST-*.xml"
-            }
           }
         }
       }
