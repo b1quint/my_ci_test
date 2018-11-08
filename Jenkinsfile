@@ -19,7 +19,10 @@ pipeline {
     
     stage('Define new variable') {
       steps {
-        sh 'NEW_ENV="my new env"'
+        sh '''
+          NEW_ENV="my new env"
+          echo $NEW_ENV
+          '''
         sh 'echo $NEW_ENV'
       }
     }
