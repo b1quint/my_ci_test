@@ -1,36 +1,38 @@
 pipeline {
 
-  agent any
-  environment {
-    PACKAGE_NAME = 'dragons'
-    CONDA_HOME = 'miniconda'
-    PYENV_HOME = '.pyenv'
-  }
-  
+  agent none
   stages {
-
-    stage('Check variables') {
-      steps {
-        sh 'echo $PACKAGE_NAME'
-        sh 'echo $CONDA_HOME'
-        sh 'echo $PYENV_HOME'
-      }
-    }
-    
-    stage('Define new variable') {
-      steps {
-        sh '''
-          NEW_ENV="my new env"
-          echo $NEW_ENV
-          '''
-        sh 'echo $NEW_ENV'
-      }
-    }
-    
-    stage('Check variable persistensy') {
-      steps {
-        sh 'echo $NEW_ENV'
+    stage('Run Tests') {  
+      parallel {
+        stage('Python 2.7') {
+          agent any
+          steps {
+            sh '''
+              python --version
+            '''
+          }
+          post {
+            always {
+              junit "**/TEST-*.xml"
+            }
+          }
         }
-    }  
+        stage('Python 3.6') {
+          agent any 
+          steps {
+            sh '''
+              python --version
+            '''
+          }
+          post {
+            always {
+              junit "**/TEST-*.xml"
+            }
+          }
+        }
+      }
+    }
   }
 }
+  
+           
