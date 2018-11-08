@@ -1,6 +1,11 @@
 pipeline {
    
     agent any
+    environment {
+      PACKAGE_NAME = 'dragons'
+      CONDA_HOME = '$WORKSPACE/miniconda'
+      PYENV_HOME = '$WORKSPACE/.pyenv'
+    }
     stages {
         stage('Build') {
             steps {
@@ -9,8 +14,8 @@ pipeline {
                 sh '''
                     echo "Multiline shell steps works too"
                     ls -lah
+                    echo $CONDA_HOME
                 '''
-               sh 'echo "What about webhooks? Does it work?"'
             }
         }
     }
