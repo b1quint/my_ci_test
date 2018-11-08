@@ -3,8 +3,8 @@ pipeline {
     agent any
     environment {
       PACKAGE_NAME = 'dragons'
-      CONDA_HOME = '$WORKSPACE/miniconda'
-      PYENV_HOME = '$WORKSPACE/.pyenv'
+      CONDA_HOME = 'miniconda'
+      PYENV_HOME = '.pyenv'
     }
     stages {
         stage('Build') {
@@ -14,7 +14,7 @@ pipeline {
                 sh '''
                     echo "Multiline shell steps works too"
                     ls -lah
-                    echo $CONDA_HOME
+                    echo $WORKSPACE/$CONDA_HOME
                 '''
             }
         }
