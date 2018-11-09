@@ -40,6 +40,17 @@ pipeline {
               '''
       }
     }
+    stage('Static code metrics') {
+      steps {
+        echo "Raw metrics"
+        sh  ''' source activate ${BUILD_TAG}
+                radon raw --json irisvmpy/ > raw_report.json
+                radon cc --json irisvmpy/ > cc_report.json
+                radon mi --json irisvmpy/ > mi_report.json
+                //TODO: add conversion and HTML publisher step
+                '''
+      }
+    }  
   }
   post {
     always {
