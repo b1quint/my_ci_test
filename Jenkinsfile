@@ -1,80 +1,53 @@
 #!/usr/bin/env groovy
 pipeline {
 
-  agent none
+  agent any
+  
+  triggers {
+    pollSCM('*/5 * * * 1-5')
+  }
+  
+  options {
+    skipDefaultCheckout(true)
+    // Keep the 10 most recent builds
+    buildDiscarder(logRotator(numToKeepStr: '10'))
+    timestamps()
+  }
+  
+  environment {
+    PATH="~/miniconda3/bin:$PATH"
+  }
+  
   stages {
-    
-    stages {
-      stage('Run Tests') {  
-        parallel {
-        
-          stage('Python 2.7') {
-            agent any
-            environment {
-              PYTHON_VERSION=2.7
-            }
-            stages {
-              stage('build') {
-                steps {
-                  sh 'echo "Building in python $PYTHON_VERSION"'
-                }                
-              }
-              stage('test') {
-                steps {
-                  sh 'echo "Testing with python $PYTHON_VERSION"'
-                }  
-              }
-              stage('deploy') {
-                steps {
-                  sh 'echo "Deploy python $PYTHON_VERSION"'
-                }  
-              }
-            }
-          } 
-        
-          stage('Python 3.6') {
-            agent any
-            environment {
-              PYTHON_VERSION=3.6
-            }
-            stages {
-              stage('build') {
-                steps {
-                  sh 'echo "Building in python $PYTHON_VERSION"'
-                }                
-              }
-              stage('test') {
-                steps {
-                  sh 'echo "Testing with python $PYTHON_VERSION"'
-                }  
-              }
-              stage('deploy') {
-                steps {
-                  sh 'echo "Deploy python $PYTHON_VERSION"'
-                }  
-              }  
-            }
-          }
-        }
+    stage ("Code pull"){
+      steps{
+        checkout scm
       }
     }
-    
+    stage ("Build Environment") {
+      steps {
+        sh '''conda create --yes -n ${BUILD_TAG} python
+              source activate ${BUILD_TAG} 
+              pip install -r requirements.txt
+        '''
+      }
+    }
+    stage('Test environment') {
+      steps {
+        sh '''source activate ${BUILD_TAG} 
+              pip list
+              which pip
+              which python
+              '''
+      }
+    }
+  }
   post {
     always {
-      echo 'This will always run'
-    }
-    success {
-      echo 'This will run only if successful'
+      sh 'conda remove --yes -n ${BUILD_TAG} --all'
     }
     failure {
-      echo 'This will run only if failed'
-    }
-    unstable {
-      echo 'This will run only if the run was marked as unstable'
-    }
-    changed {
-      echo 'This will run only if the state of the Pipeline has changed'
-      echo 'For example, if the Pipeline was previously failing but is now successful'
+      echo "Send e-mail, when failed"
     }
   }
 }
