@@ -51,7 +51,7 @@ pipeline {
         //TODO: add conversion and HTML publisher step  
       }
     }
-    stage('Static code metrics') {
+    stage('Coverage metrics') {
       steps {
         echo "Code Coverage"
         sh  ''' source activate ${BUILD_TAG}
