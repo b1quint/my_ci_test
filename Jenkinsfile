@@ -76,7 +76,7 @@ pipeline {
         }
       }
     }
-    stage('Static code metrics') {
+    stage('Testing PEP8') {
       steps {
         echo "PEP8 style check"
           sh  ''' source activate ${BUILD_TAG}
