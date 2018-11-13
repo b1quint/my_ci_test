@@ -1,3 +1,3 @@
-# Testing Read The Docs
+# My Continuous Integration Test
 
-This repository is being created with the solely purpose of testing integration with Read The Docs and automatic documentation.
+This repository contains simple packages and modules that will be built and tested during a full automatic continuous integration process. The documentation using sphinx and readthedocs is also tested.
