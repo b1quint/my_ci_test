@@ -14,5 +14,5 @@ class TestGreetPeople(unittest.TestCase):
         greet_people.say_hello('Stranger')  # Call function.
         sys.stdout = sys.__stdout__  # Reset redirect.
 
-        self.assertEqual('Hello Stranger', captured_output.getvalue())
+        self.assertEqual('Hello Stranger', captured_output.getvalue().strip())
 
