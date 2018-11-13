@@ -51,15 +51,14 @@ pipeline {
                 radon cc --json irisvmpy/ > cc_report.json
                 radon mi --json irisvmpy/ > mi_report.json
                 '''
-        //TODO: add conversion and HTML publisher step  
-      }
-    }
-    stage('Coverage metrics') {
-      steps {
         echo "Code Coverage"
         sh  ''' source activate ${BUILD_TAG}
                 coverage run dummy_package/greet_people.py
                 python -m coverage xml -o ./reports/coverage.xml
+                '''
+        echo "PEP8 style check"
+        sh  ''' source activate ${BUILD_TAG}
+                pylint --disable=C irisvmpy || true
                 '''
       }
       post{
@@ -76,14 +75,6 @@ pipeline {
               sourceEncoding: 'ASCII',
               zoomCoverageChart: false])                    
         }
-      }
-    }
-    stage('Testing PEP8') {
-      steps {
-        echo "PEP8 style check"
-          sh  ''' source activate ${BUILD_TAG}
-                  pylint --disable=C irisvmpy || true
-                  '''
       }
     }
     stage('Unit tests') {
