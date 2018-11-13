@@ -2,7 +2,7 @@ import unittest
 import io
 import sys
 
-from ..greet_people import say_hello
+from rtd_test import greet_people
 
 
 class TestGreetPeople(unittest.TestCase):
@@ -11,8 +11,8 @@ class TestGreetPeople(unittest.TestCase):
 
         captured_output = io.StringIO()  # Create StringIO object
         sys.stdout = captured_output  # and redirect stdout.
-        say_hello('Stranger')  # Call function.
+        greet_people.say_hello('Stranger')  # Call function.
         sys.stdout = sys.__stdout__  # Reset redirect.
 
-        self.assertEqual('Hello Stranger', capturedOutput.getvalue())
+        self.assertEqual('Hello Stranger', captured_output.getvalue())
 
