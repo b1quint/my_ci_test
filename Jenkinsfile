@@ -29,6 +29,7 @@ pipeline {
         sh '''conda create --yes -n ${BUILD_TAG} python
               source activate ${BUILD_TAG} 
               conda install coverage pytest
+              conda install -c omnia behave
         '''
       }
     }
@@ -94,6 +95,21 @@ pipeline {
         always {
           // Archive unit tests for the future
           junit allowEmptyResults: true, testResults: 'test-reports/results.xml'//, fingerprint: true 
+        }
+      }
+    }
+    stage('integration tests') {
+      steps {
+        sh  ''' source activate ${BUILD_TAG}
+          behave -f=formatters.cucumber_json:PrettyCucumberJSONFormatter -o ./reports/integration.json
+          '''
+      }
+      post {
+        always {
+          cucumber (fileIncludePattern: '**/integration*.json',
+            jsonReportDirectory: './reports/',
+            parallelTesting: true,
+            sortingMethod: 'ALPHABETICAL')
         }
       }
     }
