@@ -9,7 +9,7 @@ import os
 
 def my_method1(p):
     """
-    This is the doctring used on subpackage1. It has nothing to do with the `rtd_test.greet_people` module.
+    This is the doctring used on subpackage1. It has nothing to do with the `dummy_package.greet_people` module.
 
     Parameters
     ----------

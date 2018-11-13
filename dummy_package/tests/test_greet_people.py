@@ -2,7 +2,7 @@ import unittest
 import io
 import sys
 
-from rtd_test import greet_people
+from dummy_package import greet_people
 
 
 class TestGreetPeople(unittest.TestCase):
