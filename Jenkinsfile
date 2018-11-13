@@ -30,6 +30,7 @@ pipeline {
               source activate ${BUILD_TAG} 
               conda install coverage pytest
               conda install -c omnia behave
+              pip install behave2cucumber
         '''
       }
     }
@@ -101,9 +102,10 @@ pipeline {
     stage('integration tests') {
       steps {
         sh  ''' source activate ${BUILD_TAG}
-          behave -f=formatters.cucumber_json:PrettyCucumberJSONFormatter -o ./reports/integration.json
+          behave -f=json.pretty -o ./reports/integration.json
+          python -m behave2cucumber ./reports/integration.json
           '''
-      }
+        }
       post {
         always {
           cucumber (fileIncludePattern: '**/integration*.json',
