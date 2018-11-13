@@ -131,6 +131,11 @@ pipeline {
         }
       }
     }
+    stage("Deploy to PyPI") {
+      steps {
+        sh "twine upload --repository-url https://test.pypi.org/legacy/ dist/*"
+      }
+    }
   }
   post {
     always {
