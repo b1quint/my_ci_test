@@ -30,6 +30,7 @@ pipeline {
               source activate ${BUILD_TAG} 
               conda install coverage pytest
               conda install -c omnia behave
+              conda install -c conda-forge twine 
               pip install behave2cucumber
         '''
       }
