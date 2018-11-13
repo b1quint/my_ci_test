@@ -58,7 +58,7 @@ pipeline {
       steps {
         echo "Code Coverage"
         sh  ''' source activate ${BUILD_TAG}
-                coverage run rtd_test/greet_people.py
+                coverage run dummy_package/greet_people.py
                 python -m coverage xml -o ./reports/coverage.xml
                 '''
       }
