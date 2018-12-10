@@ -134,9 +134,9 @@ pipeline {
     }
     stage("Deploy to PyPI") {
       steps {
-        sh '''echo "Deploy to PyPi"
-              twine upload --repository-url https://test.pypi.org/legacy/ dist/*"
-              '''
+        echo "Deploy to PyPi"
+        // sh '''twine upload --repository-url https://test.pypi.org/legacy/ dist/*
+        //       '''
       }
     }
   }
