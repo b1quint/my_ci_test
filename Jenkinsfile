@@ -96,22 +96,22 @@ pipeline {
         }
       }
     }
-    //stage('integration tests') {
-    //  steps {
-    //   sh  ''' source activate ${BUILD_TAG}
-    //      behave -f=json.pretty -o ./reports/integration.json
-    //      python -m behave2cucumber ./reports/integration.json
-    //      '''
-    //    }
-    //  post {
-    //    always {
-    //      cucumber (fileIncludePattern: '**/integration*.json',
-    //        jsonReportDirectory: './reports/',
-    //       parallelTesting: true,
-    //        sortingMethod: 'ALPHABETICAL')
-    //    }
-    //  }
-    //}
+    stage('integration tests') {
+      steps {
+       sh  ''' source activate ${BUILD_TAG}
+          behave -f=json.pretty -o ./reports/integration.json
+          python -m behave2cucumber ./reports/integration.json
+          '''
+        }
+      post {
+        always {
+          cucumber (fileIncludePattern: '**/integration*.json',
+            jsonReportDirectory: './reports/',
+           parallelTesting: true,
+            sortingMethod: 'ALPHABETICAL')
+        }
+      }
+    }
     stage('Build package') {
       when {
         expression {
