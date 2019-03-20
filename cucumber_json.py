@@ -12,6 +12,7 @@ except ImportError:
 
 
 class CucumberJSONFormatter(Formatter):
+
     name = 'json'
     description = 'JSON dump of test run'
     dumps_kwargs = {}
@@ -244,5 +245,5 @@ class PrettyCucumberJSONFormatter(CucumberJSONFormatter):
     """
     name = 'json.pretty'
     description = 'JSON dump of test run (human readable)'
-    dumps_kwargs = { 'indent': 2, 'sort_keys': True }
+    dumps_kwargs = {'indent': 2, 'sort_keys': True}
 
