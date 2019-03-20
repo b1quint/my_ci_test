@@ -105,10 +105,12 @@ pipeline {
         }
       post {
         always {
-          cucumber (fileIncludePattern: '**/integration*.json',
+          cucumber (
+            fileIncludePattern: '**/integration*.json',
             jsonReportDirectory: './reports/',
-           parallelTesting: true,
-            sortingMethod: 'ALPHABETICAL')
+            // parallelTesting: true,
+            sortingMethod: 'ALPHABETICAL'
+            )
         }
       }
     }
