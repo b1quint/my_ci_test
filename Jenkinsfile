@@ -15,7 +15,7 @@ pipeline {
   }
   
   environment {
-    PATH="~/miniconda3/bin:$PATH"
+    PATH="$PATH:$JENKINS_HOME/anaconda3/bin"
   }
   
   stages {
@@ -30,7 +30,8 @@ pipeline {
               source activate ${BUILD_TAG} 
               conda install coverage pytest
               conda install -c omnia behave
-              conda install -c conda-forge twine 
+              conda install -c conda-forge twine
+              conda install -c chroxvi radon 
               pip install behave2cucumber
         '''
       }
@@ -119,7 +120,7 @@ pipeline {
       }
       steps {
         sh  ''' source activate ${BUILD_TAG}
-                python setup.py sdist bdist_wheel
+                python setup.py bdist_wheel
             '''
       }
       post {
@@ -133,8 +134,9 @@ pipeline {
     }
     stage("Deploy to PyPI") {
       steps {
-        source activate ${BUILD_TAG}
-        sh "twine upload --repository-url https://test.pypi.org/legacy/ dist/*"
+        echo "Deploy to PyPi"
+        // sh '''twine upload --repository-url https://test.pypi.org/legacy/ dist/*
+        //       '''
       }
     }
   }
