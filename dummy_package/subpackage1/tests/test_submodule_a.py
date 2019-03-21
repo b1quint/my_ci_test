@@ -8,7 +8,6 @@ def test_my_method_1():
     my_result = submoduleA.my_method1(my_string)
 
     assert my_result == my_string * 5
-    assert False
 
 
 def test_my_method_2():
