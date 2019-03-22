@@ -69,6 +69,7 @@ pipeline {
                     source activate ./venv
                     which pip
                     which python
+                    rm -Rf reports
                     '''
             }
         }
@@ -86,7 +87,7 @@ pipeline {
             }
             post {
                 always {
-                    echo 'Doing something after running PyLint'
+                    echo 'Report pyLint warnings using the warnings-ng-plugin'
                     recordIssues enabledForFailure: true, tool: pyLint(pattern: '**/reports/pylint.log')
                 }
             }
@@ -101,7 +102,7 @@ pipeline {
             }
             post {
                 always {
-                    echo 'Doing something after running PyLint'
+                    echo 'Report pyDocStyle warnings using the warnings-ng-plugin'
                     recordIssues enabledForFailure: true, tool: pyDocStyle(pattern: '**/reports/pydocstyle.log')
                 }
             }
@@ -113,28 +114,28 @@ pipeline {
                     source activate ./venv
                     which python
                     which pytest
-                    coverage run -m pytest dummy_package/subpackage1 --junit-xml reports/TEST_1.xml
+                    coverage run -a -m pytest dummy_package/subpackage1 --junit-xml reports/test_1.xml
                     '''
                 }
             post {
                 always {
                     junit (allowEmptyResults: true,
-                        testResults: 'reports/TEST_*.xml')
+                        testResults: 'reports/test_*.xml')
                 }
             }
         }
 
-        stage('Unit tests 2') {
+        stage('Unit tests and code coverage #2') {
             steps {
                 sh  '''
                     source activate ./venv
-                    coverage run -m pytest dummy_package/subpackage2 --junit-xml reports/TEST_2.xml
+                    coverage run -a -m pytest dummy_package/subpackage1 --junit-xml reports/test_2.xml
                     '''
             }
             post {
                 always {
                     junit (allowEmptyResults: true,
-                        testResults: 'reports/TEST_*.xml')
+                        testResults: 'reports/test_*.xml')
                 }
             }
         }
@@ -143,12 +144,29 @@ pipeline {
             steps {
                 sh  '''
                     source activate ./venv
-                    coverage xml -o ./reports/coverage.xml
+                    coverage report
+                    coverage xml -o reports/cov_report.xml
                     '''
             }
             post {
                 always {
-                    echo 'Report on code coverage'
+                    echo 'Report on code coverage using Cobertura'
+                    step ([
+                        $class: 'CoberturaPublisher',
+                        autoUpdateHealth: false,
+                        autoUpdateStability: false,
+                        coberturaReportFile: 'reports/cov_report.xml',
+                        failNoReports: false,
+                        failUnhealthy: false,
+                        failUnstable: false,
+                        maxNumberOfBuilds: 10,
+                        onlyStable: false,
+                        sourceEncoding: 'ASCII',
+                        zoomCoverageChart: true
+                        ])
+
+                    echo 'Report on code coverage using Code Coverage API plugin'
+                    publishCoverage adapters: [coberturaAdapter('')]
                 }
             }
         }
