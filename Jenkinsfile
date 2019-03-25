@@ -129,7 +129,7 @@ pipeline {
             steps {
                 sh  '''
                     source activate ./venv
-                    coverage run -a -m pytest dummy_package/subpackage1 --junit-xml reports/test_2.xml
+                    coverage run -a -m pytest dummy_package/subpackage2 --junit-xml reports/test_2.xml
                     '''
             }
             post {
