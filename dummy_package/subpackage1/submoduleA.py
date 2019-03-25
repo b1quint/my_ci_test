@@ -5,6 +5,7 @@ This is a submodule living inside subpackage1.
 """
 
 import os
+import warnings
 
 
 def my_method1(p):
@@ -16,6 +17,7 @@ def my_method1(p):
         p : str
             I have no idea why this should be a string.
     """
+    warnings.warn('I am warning you!!')
     return p * 5
 
 
