@@ -69,7 +69,6 @@ pipeline {
                     source activate ./venv
                     which pip
                     which python
-                    rm -Rf reports
                     '''
             }
         }
@@ -78,10 +77,7 @@ pipeline {
             steps {
                 sh  '''
                     source activate ./venv
-                    if [ ! -d "reports" ]; then
-                        mkdir reports
-                        fi
-
+                    mkdir -p reports
                     pylint --exit-zero --rcfile=.pylintrc dummy_package > reports/pylint.log
                     '''
             }
