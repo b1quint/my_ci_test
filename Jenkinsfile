@@ -1,176 +1,144 @@
 #!/usr/bin/env groovy
+/*
+ * Jenkins Pipeline for DRAGONS
+ *
+ * by Bruno C. Quint
+ *
+ * Required Plug-ins:
+ * - Cobertura Plug-in
+ */
+
 pipeline {
 
     agent any
 
     triggers {
-        pollSCM('*/5 * * * 1-5')
+        pollSCM('H/20 * * * 1-5')
     }
 
     options {
         skipDefaultCheckout(true)
-        // Keep the 10 most recent builds
-        buildDiscarder(logRotator(numToKeepStr: '10'))
+        buildDiscarder(logRotator(numToKeepStr: '20'))
         timestamps()
     }
 
     environment {
-        PATH="$JENKINS_HOME/anaconda3/bin:$PATH"
+        PATH = "$JENKINS_HOME/anaconda3/bin:$PATH"
     }
 
     stages {
-
-        stage ("Code pull"){
-            steps{
-                checkout scm
+        stage('Checkout') {
+            steps {
+                echo "Checkout code"
             }
         }
-
-        stage ("Download and Install Anaconda") {
-            steps {
-                sh '''
-                    if [ ! "$(command -v conda)" ]; then
-                        echo "Conda is not installed - Downloading and installing"
-
-                        curl https://repo.anaconda.com/archive/Anaconda3-5.3.1-Linux-x86_64.sh \\
-                            --output anaconda.sh --silent
-
-                        chmod a+x anaconda.sh
-                        ./anaconda.sh -u -b -p $JENKINS_HOME/anaconda3
-
-                        conda config --add channels http://ssb.stsci.edu/astroconda
-                        conda update --quiet conda
-                    else
-                        echo "Conda is already installed. Skipping fresh installation"
-                    fi
-                    '''
-            }
-        }
-
-        stage ("Build Environment") {
-            steps {
-                sh  '''
-                    if [ ! -d "${WORKSPACE}/venv" ]; then
-                        conda create -p ./venv -y
-                        fi
-
-                    source activate ./venv
-                    pip install --upgrade pip
-                    pip install -U coverage pylint
-                    pip install --force-reinstall pytest==3.10.1
-                    pip install pydocstyle
-                    '''
-            }
-        }
-
-        stage('Test environment') {
-            steps {
-                sh  '''
-                    source activate ./venv
-                    which pip
-                    which python
-                    '''
-            }
-        }
-
-        stage('Code quality with PyLint') {
-            steps {
-                sh  '''
-                    source activate ./venv
-                    mkdir -p reports
-                    pylint --exit-zero --rcfile=.pylintrc dummy_package > reports/pylint.log
-                    '''
-            }
-            post {
-                always {
-                    echo 'Report pyLint warnings using the warnings-ng-plugin'
-                    recordIssues enabledForFailure: true, tool: pyLint(pattern: '**/reports/pylint.log')
+        stage("Build") {
+            parallel {
+                stage("CentOS 6") {
+                    steps {
+                        echo "build on ${env.NODE_NAME}"
+                    }
+                }
+                stage("CentOS 7") {
+                    steps {
+                        echo "build on ${env.NODE_NAME}"
+                    }
+                }
+                stage("MacOs 10.10") {
+                    steps {
+                        echo "build on ${env.NODE_NAME}"
+                    }
+                }
+                stage("MacOs 10.11") {
+                    steps {
+                        echo "build on ${env.NODE_NAME}"
+                    }
+                }
+                stage("MacOs 10.12") {
+                    steps {
+                        echo "build on ${env.NODE_NAME}"
+                    }
+                }
+                stage("MacOs 10.13") {
+                    steps {
+                        echo "build on ${env.NODE_NAME}"
+                    }
+                }
+                stage("MacOs 10.14") {
+                    steps {
+                        echo "build on ${env.NODE_NAME}"
+                    }
                 }
             }
         }
-
-        stage('Checking docstrings') {
-            steps {
-                sh  '''
-                    source activate ./venv
-                    pydocstyle --add-ignore D400,D401,D205,D105,D105 dummy_package > 'reports/pydocstyle.log' || exit 0
-                    '''
-            }
-            post {
-                always {
-                    echo 'Report pyDocStyle warnings using the warnings-ng-plugin'
-                    recordIssues enabledForFailure: true, tool: pyDocStyle(pattern: '**/reports/pydocstyle.log')
+        stage('Pre-Deploy') {
+            parallel {
+                stage("linux-64") {
+                    steps {
+                        echo "build on ${env.NODE_NAME}"
+                    }
+                }
+                stage("osx-64") {
+                    steps {
+                        echo "build on ${env.NODE_NAME}"
+                    }
                 }
             }
         }
-
-        stage('Unit tests and code coverage #1') {
-            steps {
-                sh  '''
-                    source activate ./venv
-                    which python
-                    which pytest
-                    coverage run -a -m pytest dummy_package/subpackage1 --junit-xml reports/test_1.xml
-                    '''
+        stage('Test') {
+            parallel {
+                stage("linux-64") {
+                    steps {
+                        echo "pull build"
+                        echo "install build"
+                        echo "run tests"
+                    }
                 }
-            post {
-                always {
-                    junit (allowEmptyResults: true,
-                        testResults: 'reports/test_*.xml')
+                stage("osx-64") {
+                    steps {
+                        echo "pull build"
+                        echo "install build"
+                        echo "run tests"
+                    }
                 }
-            }
-        }
-
-        stage('Unit tests and code coverage #2') {
-            steps {
-                sh  '''
-                    source activate ./venv
-                    coverage run -a -m pytest dummy_package/subpackage2 --junit-xml reports/test_2.xml
-                    '''
-            }
-            post {
-                always {
-                    junit (allowEmptyResults: true,
-                        testResults: 'reports/test_*.xml')
+                stage('static metrics') {
+                    steps {
+                        echo "run PyLint and PyDocStyle"
+                    }
                 }
             }
         }
-
-        stage('Code coverage') {
-            steps {
-                sh  '''
-                    source activate ./venv
-                    coverage report
-                    coverage xml -o reports/cov_report.xml
-                    '''
-            }
-            post {
-                always {
-                    echo 'Report on code coverage using Cobertura'
-                    step ([
-                        $class: 'CoberturaPublisher',
-                        autoUpdateHealth: false,
-                        autoUpdateStability: false,
-                        coberturaReportFile: 'reports/cov_report.xml',
-                        failNoReports: false,
-                        failUnhealthy: false,
-                        failUnstable: false,
-                        maxNumberOfBuilds: 10,
-                        onlyStable: false,
-                        sourceEncoding: 'ASCII',
-                        zoomCoverageChart: true
-                        ])
-
-                    echo 'Report on code coverage using Code Coverage API plugin'
-                    publishCoverage adapters: [coberturaAdapter('')]
+        stage('Deploy') {
+            parallel {
+                stage('deploy linux-32') {
+                    steps {
+                        echo "deploy linux-32"
+                    }
                 }
+                stage('deploy linux-64') {
+                    steps {
+                        echo "deploy linux-64"
+                    }
+                }
+                stage('deploy noarch') {
+                    steps {
+                        echo "deploy noarch"
+                    }
+                }
+                stage('deploy osx-64') {
+                    steps {
+                        echo "deploy osx-64"
+                    }
+                }
+            }
+        }
+        stage('Report') {
+            steps {
+                echo "Report on something"
             }
         }
     }
     post {
-        always {
-            echo 'Finished pipeline'
-        }
         failure {
             echo "Send e-mail, when failed"
         }
