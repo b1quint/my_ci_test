@@ -27,114 +27,58 @@ pipeline {
     }
 
     stages {
-        stage('Checkout') {
+        stage('Stage 0') {
             steps {
                 echo "Checkout code"
             }
         }
-        stage("Build") {
+        stage("Stage 1") {
             parallel {
-                stage("CentOS 6") {
+                stage("Parallel Stage 1.1") {
                     steps {
-                        echo "build on ${env.NODE_NAME}"
+                        echo "Step 1.1.1"
+                        echo "Step 1.1.2"
                     }
                 }
-                stage("CentOS 7") {
+                stage("Parallel Stage 1.2") {
                     steps {
-                        echo "build on ${env.NODE_NAME}"
+                        echo "Step 1.2.1"
+                        echo "Step 1.2.2"
                     }
                 }
-                stage("MacOs 10.10") {
+                stage("Parallel Stage 1.3") {
                     steps {
-                        echo "build on ${env.NODE_NAME}"
-                    }
-                }
-                stage("MacOs 10.11") {
-                    steps {
-                        echo "build on ${env.NODE_NAME}"
-                    }
-                }
-                stage("MacOs 10.12") {
-                    steps {
-                        echo "build on ${env.NODE_NAME}"
-                    }
-                }
-                stage("MacOs 10.13") {
-                    steps {
-                        echo "build on ${env.NODE_NAME}"
-                    }
-                }
-                stage("MacOs 10.14") {
-                    steps {
-                        echo "build on ${env.NODE_NAME}"
+                        echo "Step 1.3.1"
+                        echo "Step 1.3.2"
+                        echo "Step 1.3.3"
                     }
                 }
             }
         }
-        stage('Pre-Deploy') {
+        stage('Stage 2') {
             parallel {
-                stage("linux-64") {
+                stage("Parallel Stage 2.1") {
                     steps {
-                        echo "build on ${env.NODE_NAME}"
+                        echo "Step 2.1.1"
+                        echo "Step 2.1.2"
+                        echo "Step 2.1.3"
                     }
                 }
-                stage("osx-64") {
+                stage("Parallel Stage 2.2") {
                     steps {
-                        echo "build on ${env.NODE_NAME}"
+                        echo "Step 2.2.1"
+                        echo "Step 2.2.2"
+                        echo "Step 2.2.3"
+                        echo "Step 2.2.4"
                     }
                 }
             }
         }
-        stage('Test') {
-            parallel {
-                stage("linux-64") {
-                    steps {
-                        echo "pull build"
-                        echo "install build"
-                        echo "run tests"
-                    }
-                }
-                stage("osx-64") {
-                    steps {
-                        echo "pull build"
-                        echo "install build"
-                        echo "run tests"
-                    }
-                }
-                stage('static metrics') {
-                    steps {
-                        echo "run PyLint and PyDocStyle"
-                    }
-                }
-            }
-        }
-        stage('Deploy') {
-            parallel {
-                stage('deploy linux-32') {
-                    steps {
-                        echo "deploy linux-32"
-                    }
-                }
-                stage('deploy linux-64') {
-                    steps {
-                        echo "deploy linux-64"
-                    }
-                }
-                stage('deploy noarch') {
-                    steps {
-                        echo "deploy noarch"
-                    }
-                }
-                stage('deploy osx-64') {
-                    steps {
-                        echo "deploy osx-64"
-                    }
-                }
-            }
-        }
-        stage('Report') {
+        stage('Stage 3') {
             steps {
-                echo "Report on something"
+                echo "Step 3.1"
+                echo "Step 3.2"
+                echo "Step 3.3"
             }
         }
     }
